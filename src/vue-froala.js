@@ -1,25 +1,20 @@
 import FroalaEditor from 'froala-editor';
 import { h } from 'vue';
 export default (App, Options = {}) => {
-
   console.log(App);
 
   var froalaEditorFunctionality = {
-
     props: ['tag', 'modelValue', 'config', 'onManualControllerReady'],
 
     watch: {
       modelValue: function () {
         this.model = this.modelValue;
         this.updateValue();
-      }
+      },
     },
 
     render: function () {
-      return h(
-        this.currentTag,
-        [this.$slots.default]
-      )
+      return h(this.currentTag, [this.$slots.default]);
     },
 
     created: function () {
@@ -28,9 +23,8 @@ export default (App, Options = {}) => {
     },
 
     // After first time render.
-    mounted: function() {
+    mounted: function () {
       if (this.SPECIAL_TAGS.indexOf(this.currentTag) != -1) {
-
         this.hasSpecialTag = true;
       }
 
@@ -41,14 +35,12 @@ export default (App, Options = {}) => {
       }
     },
 
-    beforeDestroy: function() {
+    beforeUnmount: function () {
       this.destroyEditor();
     },
 
     data: function () {
-
       return {
-
         initEvents: [],
 
         // Tag on which the editor is initialized.
@@ -63,7 +55,7 @@ export default (App, Options = {}) => {
         // Editor options config
         defaultConfig: {
           immediateVueModelUpdate: false,
-          vueIgnoreAttrs: null
+          vueIgnoreAttrs: null,
         },
 
         editorInitialized: false,
@@ -73,11 +65,11 @@ export default (App, Options = {}) => {
         hasSpecialTag: false,
 
         model: null,
-        oldModel: null
+        oldModel: null,
       };
     },
     methods: {
-      updateValue: function() {
+      updateValue: function () {
         if (JSON.stringify(this.oldModel) == JSON.stringify(this.model)) {
           return;
         }
@@ -85,14 +77,13 @@ export default (App, Options = {}) => {
         this.setContent();
       },
 
-      createEditor: function() {
-
+      createEditor: function () {
         if (this.editorInitialized) {
           return;
         }
 
         this.currentConfig = this.clone(this.config || this.defaultConfig);
-        this.currentConfig =  {...this.currentConfig};
+        this.currentConfig = { ...this.currentConfig };
 
         this.setContent(true);
 
@@ -100,13 +91,12 @@ export default (App, Options = {}) => {
         this.registerEvents();
         this.initListeners();
 
-        this._editor = new FroalaEditor(this.$el, this.currentConfig)
+        this._editor = new FroalaEditor(this.$el, this.currentConfig);
 
         this.editorInitialized = true;
-
       },
 
-       // Return clone object 
+      // Return clone object
       clone(item) {
         const me = this;
         if (!item) {
@@ -123,17 +113,18 @@ export default (App, Options = {}) => {
           }
         });
 
-        if (typeof result == "undefined") {
-          if (Object.prototype.toString.call(item) === "[object Array]") {
+        if (typeof result == 'undefined') {
+          if (Object.prototype.toString.call(item) === '[object Array]') {
             result = [];
             item.forEach(function (child, index, array) {
               result[index] = me.clone(child);
             });
-          } else if (typeof item == "object") {
+          } else if (typeof item == 'object') {
             // testing that this is DOM
-            if (item.nodeType && typeof item.cloneNode == "function") {
+            if (item.nodeType && typeof item.cloneNode == 'function') {
               result = item.cloneNode(true);
-            } else if (!item.prototype) { // check that this is a literal
+            } else if (!item.prototype) {
+              // check that this is a literal
               if (item instanceof Date) {
                 result = new Date(item);
               } else {
@@ -158,13 +149,11 @@ export default (App, Options = {}) => {
       },
 
       setContent: function (firstTime) {
-
         if (!this.editorInitialized && !firstTime) {
           return;
         }
 
         if (this.model || this.model == '') {
-
           this.oldModel = this.model;
 
           if (this.hasSpecialTag) {
@@ -175,19 +164,16 @@ export default (App, Options = {}) => {
         }
       },
 
-      setNormalTagContent: function(firstTime) {
-
+      setNormalTagContent: function (firstTime) {
         var self = this;
 
         function htmlSet() {
-
           self._editor.html.set(self.model || '');
 
           //This will reset the undo stack everytime the model changes externally. Can we fix this?
 
           self._editor.undo.saveStep();
           self._editor.undo.reset();
-
         }
 
         if (firstTime) {
@@ -197,16 +183,13 @@ export default (App, Options = {}) => {
         } else {
           htmlSet();
         }
-
       },
 
-      setSpecialTagContent: function() {
-
+      setSpecialTagContent: function () {
         var tags = this.model;
 
         // add tags on element
         if (tags) {
-
           for (var attr in tags) {
             if (tags.hasOwnProperty(attr) && attr != this.INNER_HTML_ATTR) {
               this.$el.setAttribute(attr, tags[attr]);
@@ -219,21 +202,19 @@ export default (App, Options = {}) => {
         }
       },
 
-      destroyEditor: function() {
-
+      destroyEditor: function () {
         if (this._editor) {
-
           this._editor.destroy();
           this.editorInitialized = false;
           this._editor = null;
         }
       },
 
-      getEditor: function() {
+      getEditor: function () {
         return this._editor;
       },
 
-      generateManualController: function() {
+      generateManualController: function () {
         var controls = {
           initialize: this.createEditor,
           destroy: this.destroyEditor,
@@ -244,18 +225,18 @@ export default (App, Options = {}) => {
       },
 
       updateModel: function () {
-
         var modelContent = '';
 
         if (this.hasSpecialTag) {
-
           var attributeNodes = this.$el[0].attributes;
           var attrs = {};
 
-          for (var i = 0; i < attributeNodes.length; i++ ) {
-
+          for (var i = 0; i < attributeNodes.length; i++) {
             var attrName = attributeNodes[i].name;
-            if (this.currentConfig.vueIgnoreAttrs && this.currentConfig.vueIgnoreAttrs.indexOf(attrName) != -1) {
+            if (
+              this.currentConfig.vueIgnoreAttrs &&
+              this.currentConfig.vueIgnoreAttrs.indexOf(attrName) != -1
+            ) {
               continue;
             }
             attrs[attrName] = attributeNodes[i].value;
@@ -267,7 +248,6 @@ export default (App, Options = {}) => {
 
           modelContent = attrs;
         } else {
-
           var returnedHtml = this._editor.html.get();
           if (typeof returnedHtml === 'string') {
             modelContent = returnedHtml;
@@ -278,7 +258,7 @@ export default (App, Options = {}) => {
         this.$emit('update:modelValue', modelContent);
       },
 
-      initListeners: function() {
+      initListeners: function () {
         var self = this;
 
         this.registerEvent('initialized', function () {
@@ -294,29 +274,25 @@ export default (App, Options = {}) => {
               });
             }
           }
-        })
+        });
       },
 
       // register event on editor element
       registerEvent: function (eventName, callback) {
-
         if (!eventName || !callback) {
           return;
         }
 
         // Initialized event.
         if (eventName == 'initialized') {
-
           this.initEvents.push(callback);
-        }
-        else {
+        } else {
           if (!this.currentConfig.events) {
             this.currentConfig.events = {};
           }
 
           this.currentConfig.events[eventName] = callback;
         }
-
       },
 
       registerEvents: function () {
@@ -339,13 +315,16 @@ export default (App, Options = {}) => {
 
       registerInitialized: function () {
         // Bind initialized.
-        if(!this.currentConfig.events) {
+        if (!this.currentConfig.events) {
           this.currentConfig.events = {};
         }
 
         // Set original initialized event.
         if (this.currentConfig.events.initialized) {
-          this.registerEvent('initialized', this.currentConfig.events.initialized);
+          this.registerEvent(
+            'initialized',
+            this.currentConfig.events.initialized
+          );
         }
 
         // Bind initialized event.
@@ -353,21 +332,20 @@ export default (App, Options = {}) => {
           for (var i = 0; i < this.initEvents.length; i++) {
             this.initEvents[i].call(this._editor);
           }
-        }
-      }
-    }
+        };
+      },
+    },
   };
 
   App.component('Froala', froalaEditorFunctionality);
 
   var froalaViewFunctionality = {
-
     props: ['tag', 'value'],
 
     watch: {
       value: function (newValue) {
         this._element.innerHTML = newValue;
-      }
+      },
     },
 
     created: function () {
@@ -375,31 +353,27 @@ export default (App, Options = {}) => {
     },
 
     render: function () {
-      return h(
-        this.currentTag,
-        {
-          class: 'fr-view'
-        }
-      )
+      return h(this.currentTag, {
+        class: 'fr-view',
+      });
     },
 
     // After first time render.
-    mounted: function() {
+    mounted: function () {
       this._element = this.$el;
 
       if (this.modelValue) {
-         this._element.innerHTML = this.modelValue
+        this._element.innerHTML = this.modelValue;
       }
     },
 
     data: function () {
-
       return {
         currentTag: 'div',
         _element: null,
       };
-    }
+    },
   };
 
   App.component('FroalaView', froalaViewFunctionality);
-}
+};
