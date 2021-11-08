@@ -5,12 +5,12 @@ import 'froala-editor/css/froala_editor.pkgd.min.css';
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/js/plugins.pkgd.min.js';
 
-import App from './examples/App'
-import { createApp, h } from 'vue'
+import App from './examples/App';
+import { createApp, h } from 'vue';
 import VueFroala from 'src';
 
 let VueApp = createApp({
- render: () => h(App)
+  render: () => h(App),
 });
 
 VueApp.use(VueFroala);

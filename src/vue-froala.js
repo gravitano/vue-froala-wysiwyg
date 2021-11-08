@@ -1,8 +1,6 @@
 import FroalaEditor from 'froala-editor';
 import { h } from 'vue';
 export default (App, Options = {}) => {
-  console.log(App);
-
   var froalaEditorFunctionality = {
     props: ['tag', 'modelValue', 'config', 'onManualControllerReady'],
 
